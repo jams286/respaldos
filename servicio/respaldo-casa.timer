@@ -1,0 +1,11 @@
+[Unit]
+Description=Respaldo diario de las tools de la casa (3:30 a. m.)
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+# Si el server estaba apagado a esa hora, corre al encender
+Persistent=true
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target

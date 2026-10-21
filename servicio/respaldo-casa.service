@@ -1,0 +1,8 @@
+[Unit]
+Description=Respaldo de las bases de datos de las tools de la casa
+RequiresMountsFor=/media/datos
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/proyectos/infra/respaldos/respaldar.py
+Nice=10

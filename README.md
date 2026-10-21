@@ -1,0 +1,33 @@
+# respaldos
+
+Respaldo diario de las bases de datos de las tools de la casa (`~/.local/share/casa/*.db`: lista de compras, tareas) en el disco JamsData.
+
+- Destino: `/media/datos/Backups/casa/AAAA-MM-DD/` (se guardan los últimos 30 días).
+- Corre todos los días a las 3:30 a. m. (timer de systemd de usuario). Si el server estaba apagado a esa hora, corre al encender.
+
+## Comandos
+
+```
+python3 ~/proyectos/infra/respaldos/respaldar.py           # respaldar ahora
+systemctl --user list-timers respaldo-casa.timer           # próxima corrida
+journalctl --user -u respaldo-casa -n 20                   # qué hizo
+```
+
+Instalar o actualizar:
+
+```
+cp ~/proyectos/infra/respaldos/servicio/respaldo-casa.* ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now respaldo-casa.timer
+```
+
+## Restaurar
+
+Detener el servicio de la tool, copiar el respaldo encima y volver a arrancar. Ejemplo con la lista de compras:
+
+```
+systemctl --user stop lista-compras
+cp /media/datos/Backups/casa/AAAA-MM-DD/lista-compras.db ~/.local/share/casa/lista-compras.db
+rm -f ~/.local/share/casa/lista-compras.db-wal ~/.local/share/casa/lista-compras.db-shm
+systemctl --user start lista-compras
+```
