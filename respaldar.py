@@ -6,6 +6,10 @@ Copia cada ~/.local/share/casa/*.db a /media/datos/Backups/casa/AAAA-MM-DD/ y ca
 (copia consistente aunque el servicio esté escribiendo), más los íconos subidos a mano en
 inicio. Deja solo los últimos DIAS_A_GUARDAR días.
 
+Las ROMs de Gameflix (pesadas, nunca cambian: se llaman por su sha1) no van en cada día sino
+en una sola carpeta espejo, /media/datos/Backups/casa/gameflix-roms/, donde solo se agregan las
+nuevas.
+
     python3 respaldar.py
 """
 
@@ -22,6 +26,8 @@ ORIGENES = (  # (carpeta con las BD, subcarpeta dentro del respaldo del día)
 )
 # Íconos que Jams subió a mano en personal/inicio (los automáticos se vuelven a bajar solos)
 ICONOS_INICIO = Path.home() / '.local/share/personal/inicio-iconos/propios'
+# ROMs de casa/gameflix: archivos "<sha1>.<ext>" que no cambian una vez subidos
+ROMS_GAMEFLIX = Path.home() / '.local/share/casa/gameflix-roms'
 DESTINO = Path('/media/datos/Backups/casa')
 DIAS_A_GUARDAR = 30
 
@@ -53,6 +59,18 @@ def main():
         iconos = carpeta / 'personal' / 'inicio-iconos-propios'
         shutil.copytree(ICONOS_INICIO, iconos, dirs_exist_ok=True)
         print(f'{sum(1 for _ in iconos.iterdir())} íconos propios de inicio -> {iconos}')
+
+    if ROMS_GAMEFLIX.is_dir():
+        espejo = DESTINO / 'gameflix-roms'
+        espejo.mkdir(exist_ok=True)
+        nuevas = 0
+        for rom in ROMS_GAMEFLIX.iterdir():
+            if rom.is_file() and not rom.name.endswith('.tmp') and not (espejo / rom.name).exists():
+                temporal = espejo / (rom.name + '.tmp')
+                shutil.copy2(rom, temporal)
+                temporal.replace(espejo / rom.name)
+                nuevas += 1
+        print(f'{nuevas} ROMs nuevas de Gameflix -> {espejo}')
 
     # Solo se borran carpetas con nombre de fecha, nunca otra cosa
     fechas = sorted(p for p in DESTINO.iterdir() if p.is_dir() and re.fullmatch(r'\d{4}-\d{2}-\d{2}', p.name))
