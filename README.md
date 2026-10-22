@@ -1,8 +1,8 @@
 # respaldos
 
-Respaldo diario de las bases de datos de las tools de la casa (`~/.local/share/casa/*.db`: lista de compras, tareas) en el disco JamsData.
+Respaldo diario de las bases de datos de las tools de la casa (`~/.local/share/casa/*.db`: lista de compras, tareas, cocina, pizarra) y de las personales de Jams (`~/.local/share/personal/*.db`: inicio, con sus íconos subidos a mano) en el disco JamsData.
 
-- Destino: `/media/datos/Backups/casa/AAAA-MM-DD/` (se guardan los últimos 30 días).
+- Destino: `/media/datos/Backups/casa/AAAA-MM-DD/` (las personales en `AAAA-MM-DD/personal/`; se guardan los últimos 30 días).
 - Corre todos los días a las 3:30 a. m. (timer de systemd de usuario). Si el server estaba apagado a esa hora, corre al encender.
 
 ## Comandos
@@ -30,4 +30,14 @@ systemctl --user stop lista-compras
 cp /media/datos/Backups/casa/AAAA-MM-DD/lista-compras.db ~/.local/share/casa/lista-compras.db
 rm -f ~/.local/share/casa/lista-compras.db-wal ~/.local/share/casa/lista-compras.db-shm
 systemctl --user start lista-compras
+```
+
+Mi inicio (personal):
+
+```
+systemctl --user stop inicio
+cp /media/datos/Backups/casa/AAAA-MM-DD/personal/inicio.db ~/.local/share/personal/inicio.db
+rm -f ~/.local/share/personal/inicio.db-wal ~/.local/share/personal/inicio.db-shm
+cp -n /media/datos/Backups/casa/AAAA-MM-DD/personal/inicio-iconos-propios/* ~/.local/share/personal/inicio-iconos/propios/
+systemctl --user start inicio
 ```
