@@ -1,5 +1,7 @@
 # respaldos (infra)
 
+Tracker: respaldos
+
 Respaldo diario de las BD SQLite de las tools de la casa.
 
 - `respaldar.py`: toma todo `~/.local/share/casa/*.db` y `~/.local/share/personal/*.db` (cualquier tool nueva que guarde su BD ahí entra sola; las personales van a la subcarpeta `personal/` del día) y lo copia con `sqlite3.Connection.backup` (consistente aunque el servicio esté escribiendo) a `/media/datos/Backups/casa/AAAA-MM-DD/`, vía un `.tmp` que luego se renombra. Conserva las últimas 30 carpetas con nombre de fecha y nunca borra otra cosa.
