@@ -41,3 +41,26 @@ rm -f ~/.local/share/personal/inicio.db-wal ~/.local/share/personal/inicio.db-sh
 cp -n /media/datos/Backups/casa/AAAA-MM-DD/personal/inicio-iconos-propios/* ~/.local/share/personal/inicio-iconos/propios/
 systemctl --user start inicio
 ```
+
+## Restaurar
+
+Probado el 2026-10-31 con la lista de compras: la copia restaurada estaba íntegra y el servidor la sirvió con el dato de prueba.
+
+Probar un respaldo sin tocar los datos reales (otra base y otro puerto):
+
+```
+cp /media/datos/Backups/casa/AAAA-MM-DD/lista-compras.db /tmp/prueba.db
+sqlite3 /tmp/prueba.db 'pragma integrity_check'
+LISTA_BD=/tmp/prueba.db LISTA_PUERTO=18770 python3 ~/proyectos/casa/lista-compras/servidor.py
+curl -s http://127.0.0.1:18770/api/items
+```
+
+Restaurar de verdad (ejemplo: lista de compras; igual para tareas, cocina y pizarra con su servicio):
+
+```
+systemctl --user stop lista-compras.service
+cp ~/.local/share/casa/lista-compras.db ~/.local/share/casa/lista-compras.db.antes   # por si acaso
+rm -f ~/.local/share/casa/lista-compras.db-wal ~/.local/share/casa/lista-compras.db-shm
+cp /media/datos/Backups/casa/AAAA-MM-DD/lista-compras.db ~/.local/share/casa/
+systemctl --user start lista-compras.service
+```
